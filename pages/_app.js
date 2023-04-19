@@ -3,6 +3,7 @@ import { ChakraProvider } from '@chakra-ui/react'
 import { ClerkProvider, RedirectToSignIn, SignedIn, SignedOut } from '@clerk/nextjs'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
+import Navbar from '@/src/components/Navbar'
 
 const publicPages = ["/", "/signup", "/signin"]
 
@@ -25,6 +26,7 @@ export default function App({ Component, pageProps }) {
           ) : (
             <>
               <SignedIn>
+                <Navbar />
                 <Component {...pageProps} />
               </SignedIn>
               <SignedOut>
