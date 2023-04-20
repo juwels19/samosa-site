@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Center, Container, Flex, Heading, VStack } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Center, Container, Flex, Show, Hide, Heading, VStack } from "@chakra-ui/react";
 import { useRouter } from 'next/router'
 import { useAuth } from "@clerk/nextjs";
 import { getAuth, buildClerkProps } from "@clerk/nextjs/server";
@@ -18,7 +18,7 @@ export default function Home() {
               The home for all your degenerate FRC fantasy needs
             </Heading>
           </VStack>
-          {/* {_isMobile ? (
+          <Show breakpoint="(max-width: 450px)">
             <VStack mt="10%">
               <Button colorScheme="orange" size="lg" width="200px" onClick={() => router.push("/signup")}>
                 Signup
@@ -27,9 +27,10 @@ export default function Home() {
                 Signin
               </Button>
             </VStack>
-          ) : (
+          </Show>
+          <Hide breakpoint="(max-width: 450px)">
             <Flex justify="center" mt="5%">
-              <ButtonGroup colorScheme="orange" size="lg" gap="100">
+              <ButtonGroup colorScheme="orange" size="lg" gap="50">
                 <Button width="200px" onClick={() => router.push("/signup")}>
                   Signup
                 </Button>
@@ -38,17 +39,7 @@ export default function Home() {
                 </Button>
               </ButtonGroup>
             </Flex>
-          )} */}
-          <Flex justify="center" mt="5%">
-            <ButtonGroup colorScheme="orange" size="lg" gap="100">
-              <Button width="200px" onClick={() => router.push("/signup")}>
-                Signup
-              </Button>
-              <Button width="200px" onClick={() => router.push("/signin")}>
-                Signin
-              </Button>
-            </ButtonGroup>
-          </Flex>
+          </Hide>
           
       </Container>
     </>

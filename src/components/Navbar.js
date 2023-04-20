@@ -3,12 +3,29 @@ import SamosaStatsUserButton from "./SamosaStatsUserButton";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 import { FiMenu } from 'react-icons/fi'
+import {
+    Drawer,
+    DrawerBody,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerOverlay,
+    DrawerContent,
+    DrawerCloseButton,
+    useDisclosure
+  } from '@chakra-ui/react'
+import {useEffect} from "react"
 
 export default function Navbar(props) {
-
     const { user } = useUser();
     const router = useRouter();
+
+    const { isOpen: isDrawerOpen, onOpen: onDrawerOpen, onClose: onDrawerClose} = useDisclosure()
+
     const menuItems = [
+        {
+            label: "Dashboard",
+            route: "/dashboard"
+        },
         {
             label: "Leaderboard",
             route: "/leaderboard"
@@ -30,12 +47,40 @@ export default function Navbar(props) {
                         </Hide>
                     </HStack>
                     <HStack spacing={4}>
-                        <Hide breakpoint="(max-width: 450px)">
-                            <Text as="b">{user.fullName}</Text>
-                        </Hide>
-                        <SamosaStatsUserButton />
+                            <Hide breakpoint="(max-width: 450px)">
+                                <Text as="b">{user.fullName}</Text>
+                            </Hide>
+                            <SamosaStatsUserButton />
                             <Show breakpoint="(max-width: 450px)">
-                                <Menu autoSelect={false}>
+                                <IconButton 
+                                    variant="ghost"
+                                    icon={<FiMenu fontSize="1.25rem" />}
+                                    aria-label="Open Menu"
+                                    onClick={onDrawerOpen}
+                                />
+                                <Drawer isOpen={isDrawerOpen} onClose={onDrawerClose}>
+                                    <DrawerOverlay />
+                                    <DrawerContent>
+                                        <DrawerCloseButton />
+                                        <DrawerHeader borderBottomWidth='1px' mb="0.5rem" fontSize="2xl">Navigation Menu</DrawerHeader>
+                                        <DrawerBody>
+                                            {menuItems.map((item) => {
+                                                return (
+                                                    <Flex mb="1rem" alignContent="start">
+                                                        <Button variant="ghost" key={item.label} 
+                                                            onClick={() => {
+                                                                router.push(item.route)
+                                                                onDrawerClose()
+                                                            }}
+                                                            fontSize="xl"
+                                                                >{item.label}</Button>
+                                                    </Flex>
+                                                )
+                                            })}
+                                        </DrawerBody>
+                                    </DrawerContent>
+                                </Drawer>
+                                {/* <Menu autoSelect={false}>
                                     <MenuButton
                                         as={IconButton} 
                                         variant="ghost"
@@ -49,9 +94,9 @@ export default function Navbar(props) {
                                             )
                                         })}
                                     </MenuList>
-                                </Menu>
+                                </Menu> */}
                             </Show>
-                    </HStack>
+                        </HStack>
                 </Flex>
             </Box>
         </Box>
