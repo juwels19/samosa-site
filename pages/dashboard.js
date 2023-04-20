@@ -14,3 +14,12 @@ export default function Dashboard() {
         </Center>
     );
 }
+
+export async function getServerSideProps(context) {
+    
+    return {
+        props: {
+
+        }
+    }
+}
