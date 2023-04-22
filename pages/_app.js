@@ -1,10 +1,11 @@
-import '@/styles/globals.css'
+import '@styles/globals.css'
 import { ChakraProvider, extendTheme } from '@chakra-ui/react'
 import { ClerkProvider, RedirectToSignIn, SignedIn, SignedOut } from '@clerk/nextjs'
 import { useRouter } from 'next/router'
 import "@fontsource/nunito"
 import Head from 'next/head'
-import Navbar from '@/src/components/Navbar'
+import Navbar from '@components/Navbar'
+import Layout from '@components/Layout'
 
 const publicPages = ["/", "/signup", "/signin"]
 
@@ -33,13 +34,14 @@ export default function App({ Component, pageProps }) {
               <Component {...pageProps} />
             ) : (
               <>
-                <SignedIn>
-                  <Navbar />
-                  <Component {...pageProps} />
-                </SignedIn>
-                <SignedOut>
-                  <RedirectToSignIn />
-                </SignedOut>
+                  <SignedIn>
+                    <Layout>
+                      <Component {...pageProps} />
+                    </Layout>
+                  </SignedIn>
+                  <SignedOut>
+                    <RedirectToSignIn />
+                  </SignedOut>
               </>
             )}
         

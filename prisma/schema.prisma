@@ -9,3 +9,31 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Pick {
+  id Int @id @default(autoincrement())
+  createdAt String
+  userId String
+  answersJSON String
+  event Event @relation(fields: [eventId], references: [id])
+  eventId Int
+}
+
+model Season {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  year Int
+  district String
+  events Event[]
+}
+
+model Event {
+  id Int @id @default(autoincrement())
+  createdAt String
+  season Season @relation(fields: [seasonId], references: [id])
+  seasonId Int
+  eventCode String
+  isComplete Boolean @default(false)
+  isSubmissionClosed Boolean @default(false)
+  picks Pick[]
+}
