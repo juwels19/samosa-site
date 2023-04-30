@@ -21,18 +21,22 @@ model Pick {
 
 model Season {
   id Int @id @default(autoincrement())
-  createdAt DateTime @default(now())
+  createdAt String
   year Int
   district String
+  districtKey String
   events Event[]
 }
 
 model Event {
   id Int @id @default(autoincrement())
   createdAt String
+  name String
   season Season @relation(fields: [seasonId], references: [id])
   seasonId Int
   eventCode String
+  startDate String
+  endDate String
   isComplete Boolean @default(false)
   isSubmissionClosed Boolean @default(false)
   picks Pick[]

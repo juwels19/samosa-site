@@ -9,7 +9,7 @@ export default function Dashboard() {
     return (
         <Box minH="calc(100vh)">
             <Flex justifyContent="center">
-                <Container minW="90%" mt={{base: "4rem", md: "6rem"}} centerContent>
+                <Container minW="90%" mt={{base: "4rem", sm: "7rem"}} centerContent>
                     <Heading mb="1rem" fontSize={{base: "2xl", sm: "2xl", md: "3xl"}} textAlign="center">Submit these forms you lazy ass:</Heading>
                     <Flex flexDirection={{base: "column", sm: "row"}} mb="2rem" gap={4}>
                         <EventCard 

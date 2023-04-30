@@ -1,8 +1,9 @@
 import { Card, CardBody, Heading, Text, VStack, useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
+import moment from "moment";
 
 export default function EventCard(props) {
-    const { eventName, eventDates, submissionDateTime, isSubmissionClosed } = props
+    const { name, startDate, endDate, isSubmissionClosed } = props
 
     const router = useRouter();
     const toast = useToast();
@@ -32,9 +33,9 @@ export default function EventCard(props) {
         >
             <CardBody align="center">
                 <VStack spacing={4}>
-                    <Heading fontSize={{base: "xl"}} textAlign="center">{eventName}</Heading>
-                    <Text as="b">Event Dates: <span style={{fontWeight: "normal"}}>{eventDates}</span></Text>
-                    <Text as="b">Submissions Due: <span style={{fontWeight: "normal"}}>{submissionDateTime}</span></Text>
+                    <Heading fontSize={{base: "xl"}} textAlign="center">{name}</Heading>
+                    <Text as="b">Event Dates: <span style={{fontWeight: "normal"}}>{moment(startDate).format("MMMM Do")} to {moment(endDate).format("MMMM Do")}</span></Text>
+                    <Text as="b">Submissions Due: <span style={{fontWeight: "normal"}}>{moment(startDate).subtract(1, "day").endOf("day").format("MMMM Do, h:mm:ss a")}</span></Text>
                     { isSubmissionClosed && 
                         <Text>Click  the card to see your shitty picks</Text>
                     }
