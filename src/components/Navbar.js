@@ -66,8 +66,8 @@ export default function Navbar(props) {
                                         <DrawerBody>
                                             {menuItems.map((item) => {
                                                 return (
-                                                    <Flex mb="1rem" alignContent="start">
-                                                        <Button variant="ghost" key={item.label} 
+                                                    <Flex mb="1rem" alignContent="start" key={item.label}>
+                                                        <Button variant="ghost" 
                                                             onClick={() => {
                                                                 router.push(item.route)
                                                                 onDrawerClose()

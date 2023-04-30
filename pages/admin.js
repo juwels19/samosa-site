@@ -104,11 +104,11 @@ export default function Admin(props) {
                         </VStack>) : 
                         (
                             <>
-                                <Heading fontSize={{base: "2xl", sm: "2xl", md: "3xl"}} mb="1rem">{_currentSeason[0].year} {_currentSeason[0].district} District Events</Heading>
-                                <Grid templateColumns={{base: "repeat(1, 1fr)", sm: "repeat(2, 1fr)"}} mb="2rem">
+                                <Heading justifySelf="center" fontSize={{base: "2xl", sm: "2xl", md: "3xl"}} mb="1rem">{_currentSeason[0].year} {_currentSeason[0].district} District Events</Heading>
+                                <Grid templateColumns={{base: "repeat(1, 1fr)", sm: "repeat(2, 1fr)"}} mb="2rem" rowGap={4}>
                                     {_events.map((event) => {
                                         return (
-                                            <GridItem>
+                                            <GridItem key={event.name}>
                                                 <EventCard
                                                     name={event.name}
                                                     startDate={event.startDate}

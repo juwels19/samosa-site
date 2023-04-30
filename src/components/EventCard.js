@@ -27,6 +27,7 @@ export default function EventCard(props) {
             bg={!isSubmissionClosed ? "whiteAlpha.200" : "gray.50"} 
             size={{base: "sm", sm: "lg"}} 
             mx={{base: "0", sm: "1rem"}}
+            py={{base: "0.5rem", sm: "1rem"}}
             onClick={onCardClick}
             cursor={!isSubmissionClosed ? "pointer" : "normal"} 
             minW={{base: "100%", sm: "lg"}}
@@ -37,7 +38,7 @@ export default function EventCard(props) {
                     <Text as="b">Event Dates: <span style={{fontWeight: "normal"}}>{moment(startDate).format("MMMM Do")} to {moment(endDate).format("MMMM Do")}</span></Text>
                     <Text as="b">Submissions Due: <span style={{fontWeight: "normal"}}>{moment(startDate).subtract(1, "day").endOf("day").format("MMMM Do, h:mm:ss a")}</span></Text>
                     { isSubmissionClosed && 
-                        <Text>Click  the card to see your shitty picks</Text>
+                        <Text>Click the card to see your shitty picks</Text>
                     }
                 </VStack>
             </CardBody>
