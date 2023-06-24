@@ -3,6 +3,8 @@ import EventCard from "@components/EventCard";
 import prisma from "@prisma/index";
 import moment from "moment";
 import { useState } from "react";
+import { clerkClient, getAuth } from "@clerk/nextjs/server";
+import { useRouter } from "next/router";
 
 export default function Admin(props) {
 
@@ -13,6 +15,7 @@ export default function Admin(props) {
     const [_events, setEvents] = useState(events)
 
     const toast = useToast();
+    const router = useRouter();
 
     const displayToast = (message, type) => {
         toast({
@@ -105,7 +108,7 @@ export default function Admin(props) {
                         (
                             <>
                                 <Heading justifySelf="center" fontSize={{base: "2xl", sm: "2xl", md: "3xl"}} mb="1rem">{_currentSeason[0].year} {_currentSeason[0].district} District Events</Heading>
-                                <Grid templateColumns={{base: "repeat(1, 1fr)", sm: "repeat(2, 1fr)"}} mb="2rem" rowGap={4}>
+                                <Grid templateColumns={{base: "repeat(1, 1fr)", lg: "repeat(2, 1fr)"}} mb="2rem" rowGap={4}>
                                     {_events.map((event) => {
                                         return (
                                             <GridItem key={event.name}>
@@ -113,6 +116,8 @@ export default function Admin(props) {
                                                     name={event.name}
                                                     startDate={event.startDate}
                                                     endDate={event.endDate}
+                                                    eventCode={event.eventCode}
+                                                    isAdminCard
                                                 />
                                             </GridItem>
                                         )
@@ -128,6 +133,16 @@ export default function Admin(props) {
 }
 
 export async function getServerSideProps(context) {
+    const { userId } = getAuth(context.req);
+    const user = await clerkClient.users.getUser(userId)
+    if (!user.privateMetadata.admin) {
+        return {
+            redirect: {
+                destination: "/dashboard?status=error",
+                permanent: true,
+            }
+        }
+    }
     const year = moment().year()
     const currentSeason = await prisma.season.findMany({
         where: {
@@ -145,6 +160,9 @@ export async function getServerSideProps(context) {
                         id: seasonId
                     }
                 }
+            },
+            orderBy: {
+                startDate: "asc"
             }
         })
     }

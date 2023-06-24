@@ -35,9 +35,8 @@ export default function App({ Component, pageProps }) {
             ) : (
               <>
                   <SignedIn>
-                    <Layout>
-                      <Component {...pageProps} />
-                    </Layout>
+                    <Navbar />
+                    <Component {...pageProps} />
                   </SignedIn>
                   <SignedOut>
                     <RedirectToSignIn />

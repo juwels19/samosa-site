@@ -1,16 +1,41 @@
 import EventCard from "@components/EventCard";
-import { Box, Center, Container, Hide, Heading, Show, Text, VStack, Flex } from "@chakra-ui/react";
-import { useUser } from "@clerk/nextjs";
+import { Box, Center, Container, Hide, Heading, Show, Text, VStack, Flex, useToast, HStack, Button } from "@chakra-ui/react";
+import { FiArrowRight } from "react-icons/fi";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+import { clerkClient, getAuth } from "@clerk/nextjs/server";
 
-export default function Dashboard() {
+export default function Dashboard(props) {
 
-    const { isLoaded, isSignedIn, user } = useUser();
+    const toast = useToast();
+    const router = useRouter();
+    const { status } = router.query 
+
+    useEffect(() => {
+        if (status) {
+            toast({
+                title: "You are unable to view that page",
+                status: "error",
+                duration: 5000,
+                position: "top-right"
+            })
+        }
+    }, [])
 
     return (
         <Box minH="calc(100vh)">
             <Flex justifyContent="center">
-                <Container minW="90%" mt={{base: "4rem", sm: "7rem"}} centerContent>
-                    <Heading mb="1rem" fontSize={{base: "2xl", sm: "2xl", md: "3xl"}} textAlign="center">Submit these forms you lazy ass:</Heading>
+                <Container minW="90%" mt={{base: "5rem", sm: "7rem"}} centerContent>
+                    {props.isAdmin && 
+                        <Button
+                            colorScheme="orange"
+                            rightIcon={<FiArrowRight />}
+                            onClick={() => router.push("/admin")}
+                        >
+                            Go to Admin Panel
+                        </Button>
+                    }
+                    <Heading mb="1rem" mt={props.isAdmin ? "1rem" : ""} fontSize={{base: "2xl", sm: "2xl", md: "3xl"}} textAlign="center">Submit these forms you lazy ass:</Heading>
                     <Flex flexDirection={{base: "column", sm: "row"}} mb="2rem" gap={4}>
                         <EventCard 
                             eventName="ONT Humber College District Event 2023"
@@ -47,10 +72,11 @@ export default function Dashboard() {
 }
 
 export async function getServerSideProps(context) {
-
+    const { userId } = getAuth(context.req);
+    const user = await clerkClient.users.getUser(userId)
     return {
         props: {
-
+            isAdmin: user.privateMetadata.admin
         }
     }
 }

@@ -3,20 +3,24 @@ import { useRouter } from "next/router";
 import moment from "moment";
 
 export default function EventCard(props) {
-    const { name, startDate, endDate, isSubmissionClosed } = props
+    const { name, startDate, endDate, isSubmissionClosed, eventCode, isAdminCard } = props
 
     const router = useRouter();
     const toast = useToast();
 
-    const onCardClick = (eventCode) => {
-        // Logic in here to push the user to the form they clicked
-        // router.push()
-        toast({
-            title: "You clicked the card",
-            status: "success",
-            duration: 5000,
-            position: "top-right"
-        })
+    const onCardClick = () => {
+        // Logic in here to push the user to the form they clicked with eventCode
+        if (isAdminCard) {
+            router.push({pathname: `/event/${eventCode}`, query: { isAdminCard: true}})    
+        } else {
+            router.push(`/event/${eventCode}`)
+        }
+        // toast({
+        //     title: "You clicked the card",
+        //     status: "success",
+        //     duration: 5000,
+        //     position: "top-right"
+        // })
     }
 
     return (
