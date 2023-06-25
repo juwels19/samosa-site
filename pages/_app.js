@@ -4,8 +4,9 @@ import { ClerkProvider, RedirectToSignIn, SignedIn, SignedOut } from '@clerk/nex
 import { useRouter } from 'next/router'
 import "@fontsource/nunito"
 import Head from 'next/head'
-import Navbar from '@components/Navbar'
+import SamosaNavbar from '@components/Navbar'
 import Layout from '@components/Layout'
+import { NextUIProvider } from '@nextui-org/react'
 
 const publicPages = ["/", "/signup", "/signin"]
 
@@ -24,27 +25,29 @@ export default function App({ Component, pageProps }) {
 
   return (
     <ClerkProvider>
-      <ChakraProvider theme={theme}>
-        <Head>
-          <title>Samosa Stats</title>
-          <meta name="description" content="Degenerate FRC Fantasy" />
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
-          {isPublicPage ? (
-              <Component {...pageProps} />
-            ) : (
-              <>
-                  <SignedIn>
-                    <Navbar />
-                    <Component {...pageProps} />
-                  </SignedIn>
-                  <SignedOut>
-                    <RedirectToSignIn />
-                  </SignedOut>
-              </>
-            )}
-        
-      </ChakraProvider>
+      <NextUIProvider>
+        <ChakraProvider theme={theme}>
+          <Head>
+            <title>Samosa Stats</title>
+            <meta name="description" content="Degenerate FRC Fantasy" />
+            <link rel="icon" href="/favicon.ico" />
+          </Head>
+            {isPublicPage ? (
+                <Component {...pageProps} />
+              ) : (
+                <>
+                    <SignedIn>
+                      <Layout>
+                        <Component {...pageProps} />
+                      </Layout>
+                    </SignedIn>
+                    <SignedOut>
+                      <RedirectToSignIn />
+                    </SignedOut>
+                </>
+              )}
+        </ChakraProvider>
+      </NextUIProvider>
     </ClerkProvider>
   )
 }

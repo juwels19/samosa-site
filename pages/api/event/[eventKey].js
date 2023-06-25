@@ -4,7 +4,7 @@ import moment from "moment";
 export default async function handler(req, res) {
   const { eventKey } = req.query;
 
-  if (req.method === "GET") {
+  if (req.method === "POST") {
     // First query TBA
     const teamsResult = await fetch(
       `${tbaEndpoint}/event/${eventKey}/teams/simple`,
@@ -33,12 +33,10 @@ export default async function handler(req, res) {
           },
         });
       }
-      res
-        .status(200)
-        .json({
-          message: "Teams successfully fetched and created",
-          body: body,
-        });
+      res.status(200).json({
+        message: "Teams successfully fetched and created",
+        body: body,
+      });
     } else {
       res.status(500).json({ message: "TBA Error - Teams not fetched." });
     }

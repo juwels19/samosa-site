@@ -34,10 +34,20 @@ model Event {
   name String
   season Season @relation(fields: [seasonId], references: [id])
   seasonId Int
-  eventCode String
+  eventCode String @unique
   startDate String
   endDate String
   isComplete Boolean @default(false)
   isSubmissionClosed Boolean @default(false)
   picks Pick[]
+  teams Team[]
+  categories String[] @default([])
+}
+
+model Team {
+  id Int @id @default(autoincrement())
+  createdAt String
+  name String
+  number Int
+  events Event[]
 }
