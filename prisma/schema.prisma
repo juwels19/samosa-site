@@ -39,6 +39,7 @@ model Event {
   endDate String
   isComplete Boolean @default(false)
   isSubmissionClosed Boolean @default(false)
+  isSetup Boolean? @default(false)
   picks Pick[]
   teams Team[]
   categories String[] @default([])

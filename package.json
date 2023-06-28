@@ -16,6 +16,7 @@
     "@fontsource/nunito": "^4.5.12",
     "@nextui-org/react": "^1.0.0-beta.13",
     "@prisma/client": "^4.13.0",
+    "chakra-react-select": "^4.6.0",
     "eslint": "8.37.0",
     "eslint-config-next": "13.2.4",
     "formik": "^2.2.9",

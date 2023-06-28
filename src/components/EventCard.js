@@ -17,10 +17,7 @@ export default function EventCard(props) {
   const onCardClick = () => {
     // Logic in here to push the user to the form they clicked with eventCode
     if (isAdminCard) {
-      router.push({
-        pathname: `/event/${eventCode}`,
-        query: { isAdminCard: true },
-      });
+      router.push(`/event/${eventCode}/admin`);
     } else {
       router.push(`/event/${eventCode}`);
     }

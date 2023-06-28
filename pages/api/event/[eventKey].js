@@ -1,5 +1,6 @@
 import { tbaEndpoint } from "src/constants";
 import moment from "moment";
+import prisma from "@prisma/index";
 
 export default async function handler(req, res) {
   const { eventKey } = req.query;
