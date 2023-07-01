@@ -43,6 +43,7 @@ model Event {
   picks Pick[]
   teams Team[]
   categories String[] @default([])
+  numberOfTeamPicks Int @default(0)
 }
 
 model Team {

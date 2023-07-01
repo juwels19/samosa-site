@@ -39,6 +39,7 @@ export default function EventPage(props) {
   const categories = event.categories.map((item) => JSON.parse(item));
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [picks, setPicks] = useState(
     categories.map((item) => {
       const _category = item.value;
@@ -95,7 +96,6 @@ export default function EventPage(props) {
                 rowGap={4}
                 columnGap={8}
                 alignItems="center"
-                textAlign="center"
               >
                 {teams &&
                   teams.map((item) => {
@@ -109,35 +109,37 @@ export default function EventPage(props) {
             </VStack>
             <VStack minW="60%" mb="2rem">
               <Heading fontSize="2xl">Categories</Heading>
-              <VStack alignItems="left" minW="full">
-                {categories.map((item, index) => {
-                  return (
-                    <Box mb="0.5rem">
-                      <Heading fontSize="xl">
-                        {item.value} - ({picks[index].numChoices}{" "}
-                        {picks[index].numChoices > 1 ? "teams" : "team"})
-                      </Heading>
-                      <Select
-                        maxW="inherit"
-                        placeholder="Choose team(s)..."
-                        id={index}
-                        key={"category " + index}
-                        selectedOptionStyle="check"
-                        isMulti={parseInt(item.numTeams) > 1}
-                        options={teamsAsOptions}
-                        onChange={(event) => handleCategoryChange(index, event)}
-                        isOptionDisabled={() =>
-                          picks[index].choices.length >= picks[index].numChoices
-                        }
-                      >
-                        {categoryOptions.map((item) => {
-                          return <option key={item}>{item}</option>;
-                        })}
-                      </Select>
-                    </Box>
-                  );
-                })}
-              </VStack>
+              {categories.map((item, index) => {
+                return <Heading fontSize="xl">{item.value}</Heading>;
+              })}
+              <Heading fontSize="2xl">Pick Your Teams</Heading>
+              {categories.map((item, index) => {
+                return (
+                  <Box width="full">
+                    <Select
+                      width="100%"
+                      placeholder="Choose team..."
+                      id={index}
+                      key={"category " + index}
+                      selectedOptionStyle="check"
+                      options={teamsAsOptions}
+                      onChange={(event) => handleCategoryChange(index, event)}
+                    >
+                      {categoryOptions.map((item) => {
+                        return <option key={item}>{item}</option>;
+                      })}
+                    </Select>
+                  </Box>
+                );
+              })}
+              <Button
+                size="sm"
+                colorScheme="green"
+                isLoading={isSubmitting}
+                mt="0.5rem"
+              >
+                {true ? "Submit Picks" : "Edit Picks"}
+              </Button>
             </VStack>
           </SimpleGrid>
         </Container>

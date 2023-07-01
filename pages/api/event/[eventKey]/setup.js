@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     const body = await JSON.parse(req.body);
 
     var arrayOfStrings = [];
-    for (const category of body) {
+    for (const category of body.categories) {
       arrayOfStrings.push(JSON.stringify(category));
     }
 
@@ -22,6 +22,7 @@ export default async function handler(req, res) {
       data: {
         isSetup: true,
         categories: arrayOfStrings,
+        numberOfTeamPicks: parseInt(body.numberOfTeamPicks),
       },
     });
 

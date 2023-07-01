@@ -50,9 +50,11 @@ export default function EventAdminPage(props) {
     event.categories.map((item) => JSON.parse(item))
   );
   const [categoryLength, setCategoryLength] = useState(categories.length);
+  const [numTeams, setNumTeams] = useState(1);
   const [areTeamsLoading, setAreTeamsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSetup, setIsSetup] = useState(event.isSetup);
+
   const getTeamsForEvent = async (eventCode) => {
     setAreTeamsLoading(true);
     if (teams.length === 0) {
@@ -93,14 +95,6 @@ export default function EventAdminPage(props) {
     });
   };
 
-  const handleTeamAmountChange = (index, newTeamAmount) => {
-    setCategories((oldCategories) => {
-      var newCategories = oldCategories.slice();
-      newCategories[index].numTeams = newTeamAmount;
-      return newCategories;
-    });
-  };
-
   const handleDeleteCategory = (categoryIndex) => {
     const newCategories = categories.slice();
     newCategories.splice(categoryIndex, 1);
@@ -110,9 +104,13 @@ export default function EventAdminPage(props) {
   const handleCompleteSetup = async () => {
     setIsSubmitting(true);
     // Get all of the values in the category fields and build a JSON object of them
+    const body = {
+      categories: categories,
+      numberOfTeamPicks: numTeams,
+    };
     const setupEventRes = await fetch(`/api/event/${event.eventCode}/setup`, {
       method: "POST",
-      body: JSON.stringify(categories),
+      body: JSON.stringify(body),
     });
     if (setupEventRes.ok) {
       const res = await setupEventRes.json();
@@ -129,23 +127,14 @@ export default function EventAdminPage(props) {
     setIsSubmitting(false);
   };
 
-  console.log(categories);
+  console.log(numTeams);
 
   return (
     <Box minH="calc(100vh)">
       <Flex justifyContent="center">
         <Container minW="90%">
-          <Breadcrumb separator={<FiChevronRight />} justifyContent="left">
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/admin">Admin Panel</BreadcrumbLink>
-            </BreadcrumbItem>
-          </Breadcrumb>
           <Heading
-            mb="1rem"
-            mt={props.isAdmin ? "1rem" : ""}
+            my="1rem"
             fontSize={{ base: "2xl", sm: "2xl", md: "3xl" }}
             textAlign="center"
           >
@@ -173,8 +162,6 @@ export default function EventAdminPage(props) {
                 mb="2rem"
                 rowGap={4}
                 columnGap={8}
-                alignItems="center"
-                textAlign="center"
               >
                 {teams &&
                   teams.map((item) => {
@@ -195,7 +182,6 @@ export default function EventAdminPage(props) {
                   addCategoryOnClick({
                     id: categoryLength + 1,
                     value: "",
-                    numTeams: "1",
                   })
                 }
                 mb="0.5rem"
@@ -204,71 +190,50 @@ export default function EventAdminPage(props) {
                   ? "Add First Category"
                   : "Add Another Category"}
               </Button>
-              {categories.length !== 0 && (
-                <TableContainer>
-                  <Table variant="simple">
-                    <Thead>
-                      <Tr>
-                        <Th>Category</Th>
-                        <Th># of Teams</Th>
-                        <Th></Th>
-                      </Tr>
-                    </Thead>
-                    <Tbody>
-                      {categories.map((item, index) => {
-                        return (
-                          <Tr>
-                            <Td paddingStart={0}>
-                              <Select
-                                placeholder="Select Category..."
-                                textOverflow="ellipsis"
-                                value={item.value}
-                                id={index}
-                                width="100%"
-                                onChange={handleCategoryChange}
-                                key={"category " + index}
-                              >
-                                {categoryOptions.map((item) => {
-                                  return <option key={item}>{item}</option>;
-                                })}
-                              </Select>
-                            </Td>
-                            <Td paddingStart={0} paddingEnd={0} width="10%">
-                              <Center>
-                                <NumberInput
-                                  id={index}
-                                  defaultValue={1}
-                                  min={1}
-                                  maxWidth="60%"
-                                  onChange={(value) =>
-                                    handleTeamAmountChange(index, value)
-                                  }
-                                  value={item.numTeams}
-                                >
-                                  <NumberInputField />
-                                  <NumberInputStepper>
-                                    <NumberIncrementStepper />
-                                    <NumberDecrementStepper />
-                                  </NumberInputStepper>
-                                </NumberInput>
-                              </Center>
-                            </Td>
-                            <Td paddingEnd={0}>
-                              <IconButton
-                                colorScheme="red"
-                                size="sm"
-                                icon={<FiTrash />}
-                                id={index}
-                                onClick={() => handleDeleteCategory(index)}
-                              />
-                            </Td>
-                          </Tr>
-                        );
-                      })}
-                    </Tbody>
-                  </Table>
-                </TableContainer>
-              )}
+              {categories.length !== 0 &&
+                categories.map((item, index) => {
+                  return (
+                    <HStack>
+                      <Select
+                        placeholder="Select Category..."
+                        textOverflow="ellipsis"
+                        value={item.value}
+                        id={index}
+                        width="100%"
+                        onChange={handleCategoryChange}
+                        key={"category " + index}
+                      >
+                        {categoryOptions.map((item) => {
+                          return <option key={item}>{item}</option>;
+                        })}
+                      </Select>
+                      <IconButton
+                        colorScheme="red"
+                        size="sm"
+                        icon={<FiTrash />}
+                        id={index}
+                        onClick={() => handleDeleteCategory(index)}
+                      />
+                    </HStack>
+                  );
+                })}
+              <HStack w="full" verticalAlign="center">
+                <Heading fontSize="xl" textAlign="center" minW="fit-content">
+                  Number of teams:
+                </Heading>
+                <NumberInput
+                  defaultValue={1}
+                  min={1}
+                  width="inherit"
+                  onChange={(value) => setNumTeams(value)}
+                >
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </HStack>
               {categories.length !== 0 && (
                 <Button
                   size="sm"
