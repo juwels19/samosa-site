@@ -20,20 +20,6 @@ export default async function handler(req, res) {
     if (teamsResult.ok) {
       // Now that we have all of the events, save them to the db
       const body = await teamsResult.json();
-      for (const team of body) {
-        await prisma.team.create({
-          data: {
-            createdAt: moment().format(),
-            name: team.nickname,
-            number: team.team_number,
-            events: {
-              connect: {
-                eventCode: eventKey,
-              },
-            },
-          },
-        });
-      }
       res.status(200).json({
         message: "Teams successfully fetched and created",
         body: body,

@@ -9,6 +9,7 @@ import {
   useToast,
   Grid,
   GridItem,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import EventCard from "@components/EventCard";
 import prisma from "@prisma/index";
@@ -19,6 +20,10 @@ import { useRouter } from "next/router";
 
 export default function Admin(props) {
   const { currentSeason, events, year } = props;
+
+  const bg = useColorModeValue("#FFFFFF", "#121212");
+  const textColor = useColorModeValue("#FFFFFF", "#FFFFFF");
+
   const [isLoading, setIsLoading] = useState(false);
 
   const [_currentSeason, setCurrentSeason] = useState(currentSeason);
@@ -43,7 +48,6 @@ export default function Admin(props) {
     );
     const res = await eventFetchRes.json();
     const events = res.body;
-    console.log(events);
 
     const newEventsBody = {
       events: [],
@@ -124,63 +128,64 @@ export default function Admin(props) {
 
   return (
     <Box minH="calc(100vh)">
-      <Flex justifyContent="center">
-        <Container minW="90%" mt="2rem" centerContent>
-          {_currentSeason.length === 0 ? (
-            <VStack>
-              <Heading
-                textAlign="center"
-                fontSize={{ base: "2xl", sm: "2xl", md: "3xl" }}
-              >
-                Rishi wtf, the {moment().year()} season has not been created
-                yet...
-              </Heading>
-              <Button
-                colorScheme="orange"
-                size="lg"
-                isLoading={isLoading}
-                onClick={onCreateSeasonClick}
-              >
-                Click to create season
-              </Button>
-            </VStack>
-          ) : (
-            <>
-              <Heading
-                justifySelf="center"
-                fontSize={{ base: "2xl", sm: "2xl", md: "3xl" }}
-                mb="1rem"
-              >
-                {_currentSeason[0].year} {_currentSeason[0].district} District
-                Events
-              </Heading>
-              <Grid
-                templateColumns={{
-                  base: "repeat(1, 1fr)",
-                  lg: "repeat(2, 1fr)",
-                }}
-                mb="2rem"
-                rowGap={4}
-                columnGap={8}
-              >
-                {_events.map((event) => {
-                  return (
-                    <GridItem key={event.name}>
-                      <EventCard
-                        name={event.name}
-                        startDate={event.startDate}
-                        endDate={event.endDate}
-                        eventCode={event.eventCode}
-                        isAdminCard
-                      />
-                    </GridItem>
-                  );
-                })}
-              </Grid>
-            </>
-          )}
-        </Container>
-      </Flex>
+      <Container minW="90%" mt="2rem" centerContent>
+        {_currentSeason.length === 0 ? (
+          <VStack>
+            <Heading
+              textAlign="center"
+              fontSize={{ base: "2xl", sm: "2xl", md: "3xl" }}
+            >
+              Rishi wtf, the {moment().year()} season has not been created
+              yet...
+            </Heading>
+            <Button
+              colorScheme="blue"
+              size="lg"
+              isLoading={isLoading}
+              onClick={onCreateSeasonClick}
+            >
+              Click to create season
+            </Button>
+            {isLoading && (
+              <Text>This might take a while, so go eat some samosas...</Text>
+            )}
+          </VStack>
+        ) : (
+          <>
+            <Heading
+              justifySelf="center"
+              fontSize={{ base: "2xl", sm: "2xl", md: "3xl" }}
+              mb="1rem"
+            >
+              {_currentSeason[0].year} {_currentSeason[0].district} District
+              Events
+            </Heading>
+            <Grid
+              templateColumns={{
+                base: "repeat(1, 1fr)",
+                lg: "repeat(2, 1fr)",
+              }}
+              mb="2rem"
+              rowGap={4}
+              columnGap={8}
+            >
+              {_events.map((event) => {
+                return (
+                  <GridItem key={event.name}>
+                    <EventCard
+                      name={event.name}
+                      startDate={event.startDate}
+                      endDate={event.endDate}
+                      eventCode={event.eventCode}
+                      isAdminCard
+                    />
+                  </GridItem>
+                );
+              })}
+            </Grid>
+          </>
+        )}
+      </Container>
     </Box>
   );
 }

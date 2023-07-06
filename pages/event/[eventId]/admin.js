@@ -1,73 +1,55 @@
 import {
   Box,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
   Button,
-  Center,
   Container,
   Flex,
-  Grid,
-  GridItem,
   HStack,
   Heading,
-  IconButton,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-  Select,
   SimpleGrid,
   Spacer,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
+  Text,
   VStack,
   useToast,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import prisma from "@prisma/index";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { categoryOptions } from "src/categories";
-import { FiChevronRight, FiTrash } from "react-icons/fi";
+import { Loading } from "@nextui-org/react";
+import { FiArrowLeft } from "react-icons/fi";
 
 export default function EventAdminPage(props) {
   const router = useRouter();
   const toast = useToast();
 
   const event = props.event[0];
-  const [teams, setTeams] = useState(
-    event.teams.sort((a, b) => {
-      return a.number > b.number ? 1 : -1;
-    })
+  const [teams, setTeams] = useState([]);
+  const [numTeams, setNumTeams] = useState(event.numberOfTeamPicks);
+  const [numCategories, setNumCategories] = useState(
+    event.numberOfCategoryPicks
   );
-  const [categories, setCategories] = useState(
-    event.categories.map((item) => JSON.parse(item))
-  );
-  const [categoryLength, setCategoryLength] = useState(categories.length);
-  const [numTeams, setNumTeams] = useState(1);
   const [areTeamsLoading, setAreTeamsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSetup, setIsSetup] = useState(event.isSetup);
 
   const getTeamsForEvent = async (eventCode) => {
     setAreTeamsLoading(true);
+    const teamFetchRes = await fetch(`/api/event/${eventCode}`, {
+      method: "POST",
+    });
+    const res = await teamFetchRes.json();
+    var _teams = res.body;
     if (teams.length === 0) {
-      const teamFetchRes = await fetch(`/api/tba/event/${eventCode}/teams`, {
-        method: "GET",
-      });
-      const res = await teamFetchRes.json();
-      var _teams = res.body;
       var newTeamsArr = [];
       for (const team of _teams) {
         newTeamsArr.push({ name: team.nickname, number: team.team_number });
       }
-      setTeams(
+      await setTeams(
         newTeamsArr.sort((a, b) => {
           return a.number > b.number ? 1 : -1;
         })
@@ -76,37 +58,16 @@ export default function EventAdminPage(props) {
     setAreTeamsLoading(false);
   };
 
-  const addCategoryOnClick = (newCategory) => {
-    setCategories((oldCategories) => {
-      return [...oldCategories, newCategory];
-    });
-    setCategoryLength((oldCategoryLength) => {
-      return oldCategoryLength + 1;
-    });
-  };
-
-  const handleCategoryChange = (event) => {
-    event.preventDefault();
-    const index = event.target.id;
-    setCategories((oldCategories) => {
-      var newCategories = oldCategories.slice();
-      newCategories[index].value = event.target.value;
-      return newCategories;
-    });
-  };
-
-  const handleDeleteCategory = (categoryIndex) => {
-    const newCategories = categories.slice();
-    newCategories.splice(categoryIndex, 1);
-    setCategories(newCategories);
-  };
+  useEffect(() => {
+    getTeamsForEvent(event.eventCode);
+  }, []);
 
   const handleCompleteSetup = async () => {
     setIsSubmitting(true);
     // Get all of the values in the category fields and build a JSON object of them
     const body = {
-      categories: categories,
       numberOfTeamPicks: numTeams,
+      numberOfCategoryPicks: numCategories,
     };
     const setupEventRes = await fetch(`/api/event/${event.eventCode}/setup`, {
       method: "POST",
@@ -114,7 +75,6 @@ export default function EventAdminPage(props) {
     });
     if (setupEventRes.ok) {
       const res = await setupEventRes.json();
-      console.log(res.body.isSetup);
       setIsSetup(res.body.isSetup);
       toast({
         title: "Event Setup Successful!",
@@ -127,12 +87,19 @@ export default function EventAdminPage(props) {
     setIsSubmitting(false);
   };
 
-  console.log(numTeams);
-
   return (
     <Box minH="calc(100vh)">
       <Flex justifyContent="center">
         <Container minW="90%">
+          <Button
+            variant="link"
+            mt="0.5rem"
+            leftIcon={<FiArrowLeft />}
+            onClick={() => router.push("/admin")}
+            color="black"
+          >
+            Back to Admin Panel
+          </Button>
           <Heading
             my="1rem"
             fontSize={{ base: "2xl", sm: "2xl", md: "3xl" }}
@@ -146,85 +113,74 @@ export default function EventAdminPage(props) {
             spacingX="40px"
           >
             <VStack>
-              {teams.length === 0 ? (
-                <Button
-                  colorScheme="blue"
-                  isLoading={areTeamsLoading}
-                  onClick={() => getTeamsForEvent(event.eventCode)}
+              <Heading fontSize="2xl">Team List</Heading>
+              <HStack>
+                {areTeamsLoading && <Loading size="xl" />}
+                <VStack
+                  minW="50%"
+                  alignSelf="self-start"
+                  alignItems="self-start"
                 >
-                  Generate Team List
-                </Button>
-              ) : (
-                <Heading fontSize="2xl">Team List</Heading>
-              )}
-              <Grid
-                templateColumns="repeat(2, 1fr)"
-                mb="2rem"
-                rowGap={4}
-                columnGap={8}
+                  {!areTeamsLoading && (
+                    <>
+                      {teams
+                        .slice(0, Math.ceil(teams.length / 2))
+                        .map((item) => {
+                          return (
+                            <Text key={item.number} fontSize="lg">
+                              {item.number} - {item.name}
+                            </Text>
+                          );
+                        })}
+                    </>
+                  )}
+                </VStack>
+                <VStack
+                  alignItems="self-start"
+                  alignSelf="self-start"
+                  minW="50%"
+                >
+                  {!areTeamsLoading && (
+                    <>
+                      {teams
+                        .slice(Math.ceil(teams.length / 2))
+                        .map((item, index) => {
+                          return (
+                            <Text key={item.number} fontSize="lg">
+                              {item.number} - {item.name}
+                            </Text>
+                          );
+                        })}
+                    </>
+                  )}
+                </VStack>
+              </HStack>
+              <Button
+                colorScheme="blue"
+                onClick={() => getTeamsForEvent(event.eventCode)}
               >
-                {teams &&
-                  teams.map((item) => {
-                    return (
-                      <GridItem key={item.number}>
-                        {item.number} - {item.name}
-                      </GridItem>
-                    );
-                  })}
-              </Grid>
+                Refresh Team List
+              </Button>
             </VStack>
             <VStack minW="60%" mb="2rem">
               <Heading fontSize="2xl">Categories</Heading>
-              <Button
-                colorScheme="blue"
-                size="sm"
-                onClick={() =>
-                  addCategoryOnClick({
-                    id: categoryLength + 1,
-                    value: "",
-                  })
-                }
-                mb="0.5rem"
-              >
-                {categories.length === 0
-                  ? "Add First Category"
-                  : "Add Another Category"}
-              </Button>
-              {categories.length !== 0 &&
-                categories.map((item, index) => {
+              {categoryOptions.length !== 0 &&
+                categoryOptions.map((item, index) => {
                   return (
-                    <HStack>
-                      <Select
-                        placeholder="Select Category..."
-                        textOverflow="ellipsis"
-                        value={item.value}
-                        id={index}
-                        width="100%"
-                        onChange={handleCategoryChange}
-                        key={"category " + index}
-                      >
-                        {categoryOptions.map((item) => {
-                          return <option key={item}>{item}</option>;
-                        })}
-                      </Select>
-                      <IconButton
-                        colorScheme="red"
-                        size="sm"
-                        icon={<FiTrash />}
-                        id={index}
-                        onClick={() => handleDeleteCategory(index)}
-                      />
-                    </HStack>
+                    <Text key={index} fontSize="lg" alignSelf="self-start">
+                      {item}
+                    </Text>
                   );
                 })}
               <HStack w="full" verticalAlign="center">
                 <Heading fontSize="xl" textAlign="center" minW="fit-content">
                   Number of teams:
                 </Heading>
+                <Spacer />
                 <NumberInput
-                  defaultValue={1}
+                  defaultValue={numTeams}
                   min={1}
-                  width="inherit"
+                  width="50%"
                   onChange={(value) => setNumTeams(value)}
                 >
                   <NumberInputField />
@@ -234,17 +190,32 @@ export default function EventAdminPage(props) {
                   </NumberInputStepper>
                 </NumberInput>
               </HStack>
-              {categories.length !== 0 && (
-                <Button
-                  size="sm"
-                  colorScheme="green"
-                  onClick={handleCompleteSetup}
-                  isLoading={isSubmitting}
-                  mt="0.5rem"
+              <HStack w="full" verticalAlign="center">
+                <Heading fontSize="xl" textAlign="center" minW="fit-content">
+                  Number of categories:
+                </Heading>
+                <Spacer />
+                <NumberInput
+                  defaultValue={numCategories}
+                  min={1}
+                  width="50%"
+                  onChange={(value) => setNumCategories(value)}
                 >
-                  {!isSetup ? "Complete Event Setup" : "Submit Event Edits"}
-                </Button>
-              )}
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+              </HStack>
+              <Button
+                colorScheme="green"
+                onClick={handleCompleteSetup}
+                isLoading={isSubmitting}
+                mt="0.5rem"
+              >
+                {!isSetup ? "Complete Event Setup" : "Submit Event Edits"}
+              </Button>
             </VStack>
           </SimpleGrid>
         </Container>
@@ -259,9 +230,6 @@ export async function getServerSideProps(context) {
   const event = await prisma.event.findMany({
     where: {
       eventCode: eventId,
-    },
-    include: {
-      teams: true,
     },
   });
   return {

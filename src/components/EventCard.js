@@ -30,10 +30,13 @@ export default function EventCard(props) {
       variant="bordered"
       color="primary"
       onPress={onCardClick}
+      css={{ minHeight: "inherit" }}
     >
-      <Card.Body css={{ justifyContent: "center", textAlign: "center" }}>
-        <Text h4>{name}</Text>
-        <Text b>
+      <Card.Body css={{ justifyContent: "center" }}>
+        <Text h4 css={{ textAlign: "center" }}>
+          {name}
+        </Text>
+        <Text b css={{ textAlign: "left" }}>
           Event Dates:{" "}
           <span style={{ fontWeight: "normal" }}>
             {moment(startDate).format("MMMM Do")} to{" "}

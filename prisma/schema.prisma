@@ -14,6 +14,7 @@ model Pick {
   id Int @id @default(autoincrement())
   createdAt String
   userId String
+  displayName String?
   answersJSON String
   event Event @relation(fields: [eventId], references: [id])
   eventId Int
@@ -41,15 +42,6 @@ model Event {
   isSubmissionClosed Boolean @default(false)
   isSetup Boolean? @default(false)
   picks Pick[]
-  teams Team[]
-  categories String[] @default([])
-  numberOfTeamPicks Int @default(0)
-}
-
-model Team {
-  id Int @id @default(autoincrement())
-  createdAt String
-  name String
-  number Int
-  events Event[]
+  numberOfTeamPicks Int @default(8)
+  numberOfCategoryPicks Int @default(5)
 }

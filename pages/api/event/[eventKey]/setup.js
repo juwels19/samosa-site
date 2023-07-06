@@ -9,11 +9,6 @@ export default async function handler(req, res) {
     // This will handle the post request for when an admin wants to submit the event setup
     const body = await JSON.parse(req.body);
 
-    var arrayOfStrings = [];
-    for (const category of body.categories) {
-      arrayOfStrings.push(JSON.stringify(category));
-    }
-
     // Update the event in the DB
     const updateRes = await prisma.event.update({
       where: {
@@ -21,8 +16,8 @@ export default async function handler(req, res) {
       },
       data: {
         isSetup: true,
-        categories: arrayOfStrings,
         numberOfTeamPicks: parseInt(body.numberOfTeamPicks),
+        numberOfCategoryPicks: parseInt(body.numberOfCategoryPicks),
       },
     });
 

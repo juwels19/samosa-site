@@ -28,14 +28,14 @@ export default function SamosaNavbar(props) {
   } = useDisclosure();
 
   const menuItems = [
-    {
-      label: "Dashboard",
-      route: "/dashboard",
-    },
-    {
-      label: "Leaderboard",
-      route: "/leaderboard",
-    },
+    // {
+    //   label: "Dashboard",
+    //   route: "/dashboard",
+    // },
+    // {
+    //   label: "Leaderboard",
+    //   route: "/leaderboard",
+    // },
   ];
 
   if (props.isAdmin) {
@@ -43,9 +43,8 @@ export default function SamosaNavbar(props) {
   }
 
   return (
-    <Navbar isBordered={true} disableShadow variant="sticky">
+    <Navbar isBordered={true} disableShadow variant="sticky" maxWidth="fluid">
       <Navbar.Brand>
-        <Navbar.Toggle showIn="sm" aria-label="toggle navigation" />
         {/* Add in a logo here */}
         <Text b color="inherit">
           Logo
