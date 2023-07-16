@@ -22,6 +22,7 @@ import { useEffect, useState } from "react";
 import { categoryOptions } from "src/categories";
 import { Loading } from "@nextui-org/react";
 import { FiArrowLeft } from "react-icons/fi";
+import { getAuth, clerkClient } from "@clerk/nextjs/server";
 
 export default function EventAdminPage(props) {
   const router = useRouter();
@@ -225,6 +226,16 @@ export default function EventAdminPage(props) {
 }
 
 export async function getServerSideProps(context) {
+  const { userId } = getAuth(context.req);
+  const user = await clerkClient.users.getUser(userId);
+  if (!user.privateMetadata.admin) {
+    return {
+      redirect: {
+        destination: "/dashboard?status=error",
+        permanent: true,
+      },
+    };
+  }
   // Get and return the event from the DB
   const { eventId } = context.query;
   const event = await prisma.event.findMany({

@@ -10,6 +10,7 @@ export default function EventCard(props) {
     isSubmissionClosed,
     eventCode,
     isAdminCard,
+    isComplete,
   } = props;
 
   const router = useRouter();
@@ -28,9 +29,10 @@ export default function EventCard(props) {
       isHoverable
       isPressable
       variant="bordered"
-      color="primary"
       onPress={onCardClick}
-      css={{ minHeight: "inherit" }}
+      css={{
+        minHeight: "inherit",
+      }}
     >
       <Card.Body css={{ justifyContent: "center" }}>
         <Text h4 css={{ textAlign: "center" }}>
@@ -52,8 +54,10 @@ export default function EventCard(props) {
               .format("MMMM Do, h:mm:ss a")}
           </span>
         </Text>
-        {isSubmissionClosed && (
-          <Text>Click the card to see your shitty picks</Text>
+        {(isSubmissionClosed || isComplete) && (
+          <Text as="b" css={{ color: "$red700" }}>
+            Submissions are closed so click to see your shitty picks...
+          </Text>
         )}
       </Card.Body>
     </Card>
